@@ -1,61 +1,66 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:proyectofiberpluss/src/models/response_api.dart';
 import 'package:proyectofiberpluss/src/models/user.dart';
 import 'package:proyectofiberpluss/src/providers/users_provider.dart';
+import 'package:proyectofiberpluss/src/repositories/UserRepository.dart';
 
-class LoginController extends GetxController {
+class UserBase {}
 
-  User user = User.fromJson(GetStorage().read('user') ?? {});
+class DoLoginEvent extends UserBase {}
+
+class UserBloc {
+  final UserRepository userRepository = UserRepository();
+
+  final StreamController<UserBase> _input = StreamController();
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
   UsersProvider usersProvider = UsersProvider();
 
-  void goToRegisterPage() {
-    Get.toNamed('/register');
+  StreamSink<UserBase> get sendEvent => _input.sink;
+
+  UserBloc() {
+    _input.stream.listen(_onEvent);
+  }
+
+  void dispose() {
+    _input.close();
+  }
+
+  void _onEvent(UserBase event) {
+    if (event is DoLoginEvent) {
+      login();
+    }
   }
 
   void login() async {
     String email = emailController.text.trim();
     String password = passwordController.text.trim();
 
-    print('Email ${email}');
-    print('Password ${password}');
-
     if (isValidForm(email, password)) {
+      // ResponseApi responseApi = await usersProvider.login(email, password);
 
-      ResponseApi responseApi = await usersProvider.login(email, password);
+      User dataUser = await userRepository.getDataUser(email, password);
+      String userEncode = jsonEncode(dataUser);
 
-      print('Response Api: ${responseApi.toJson()}');
+      if (dataUser.id != null) {
+        // save in storage the result session
+        GetStorage().write('user', jsonDecode(userEncode));
 
-      if (responseApi.success == true) {
-        GetStorage().write('user', responseApi.data);
         User myUser = User.fromJson(GetStorage().read('user') ?? {});
 
-        print('Roles length: ${myUser.roles!.length}');
-
-        if(myUser.roles!.length > 1){
+        if (myUser.roles!.length > 1) {
           goToRolesPage();
-        }
-        else{
+        } else {
           goToClientHomePage();
         }
       }
-      else {
-        Get.snackbar('Login fallido', responseApi.message?? '');
-      }
     }
-  }
-
-  void  goToClientHomePage(){
-    Get.offNamedUntil('/client/home', (route) => false);
-  }
-
-  void  goToRolesPage(){
-    Get.offNamedUntil('/roles', (route) => false);
   }
 
   bool isValidForm(String email, String password) {
@@ -77,4 +82,11 @@ class LoginController extends GetxController {
     return true;
   }
 
+  void goToClientHomePage() {
+    Get.offNamedUntil('/client/home', (route) => false);
+  }
+
+  void goToRolesPage() {
+    Get.offNamedUntil('/roles', (route) => false);
+  }
 }
