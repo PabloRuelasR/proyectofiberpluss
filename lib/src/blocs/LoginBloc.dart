@@ -4,27 +4,23 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:proyectofiberpluss/src/blocs/events/UserEvents.dart';
 import 'package:proyectofiberpluss/src/models/user.dart';
-import 'package:proyectofiberpluss/src/providers/users_provider.dart';
 import 'package:proyectofiberpluss/src/repositories/UserRepository.dart';
 
-class UserBase {}
-
-class DoLoginEvent extends UserBase {}
-
-class UserBloc {
-  final UserRepository userRepository = UserRepository();
-
+class LoginBloc {
+  // Initialize Event for Bloc
   final StreamController<UserBase> _input = StreamController();
+  StreamSink<UserBase> get sendEvent => _input.sink;
 
+  // Initialize Inputs of form
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  UsersProvider usersProvider = UsersProvider();
+  // Initialize Repository
+  final UserRepository userRepository = UserRepository();
 
-  StreamSink<UserBase> get sendEvent => _input.sink;
-
-  UserBloc() {
+  LoginBloc() {
     _input.stream.listen(_onEvent);
   }
 
@@ -34,6 +30,7 @@ class UserBloc {
 
   void _onEvent(UserBase event) {
     if (event is DoLoginEvent) {
+      print("entra aqui login");
       login();
     }
   }

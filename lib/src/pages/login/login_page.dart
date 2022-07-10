@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:proyectofiberpluss/src/blocs/UserBloc.dart';
+import 'package:proyectofiberpluss/src/blocs/LoginBloc.dart';
+import 'package:proyectofiberpluss/src/blocs/events/UserEvents.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LoginPage extends StatelessWidget {
-  final UserBloc _userBloc = UserBloc();
+  final LoginBloc _userBloc = LoginBloc();
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +93,7 @@ class LoginPage extends StatelessWidget {
       width: double.infinity,
       margin: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
       child: ElevatedButton(
-          onPressed: () => _userBloc.login(),
+          onPressed: () => _userBloc.sendEvent.add(DoLoginEvent()),
           style: ElevatedButton.styleFrom(
               padding: EdgeInsets.symmetric(vertical: 15)),
           child: Text(
