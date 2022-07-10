@@ -21,11 +21,11 @@ class AdministratorHomePage extends StatelessWidget {
         body: Obx(() =>IndexedStack(
           index: con.indexTab.value,
           children: [
-            AdministratorOrdersListPage(),
-            RegisterPage(),
-            AdministratorCategoriesCreatePage(),
-            AdministratorProductsCreatePage(),
-            ClientProfileInfoPage()
+          AdministratorOrdersListPage(),
+          RegisterPage(),
+          AdministratorCategoriesCreatePage(),
+          AdministratorProductsCreatePage(),
+          ClientProfileInfoPage()
           ],
         ))
     );

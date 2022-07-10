@@ -47,6 +47,7 @@ class LoginBloc {
 
       if (dataUser.id != null) {
         // save in storage the result session
+        print(userEncode);
         GetStorage().write('user', jsonDecode(userEncode));
 
         User myUser = User.fromJson(GetStorage().read('user') ?? {});
